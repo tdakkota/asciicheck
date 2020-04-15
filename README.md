@@ -1,4 +1,4 @@
-# asciicheck [![Go Report Card](https://goreportcard.com/badge/github.com/tdakkota/asciicheck)](https://goreportcard.com/report/github.com/tdakkota/asciicheck)
+# asciicheck [![Go Report Card](https://goreportcard.com/badge/github.com/tdakkota/asciicheck)](https://goreportcard.com/report/github.com/tdakkota/asciicheck) [![codecov](https://codecov.io/gh/tdakkota/asciicheck/branch/master/graph/badge.svg)](https://codecov.io/gh/tdakkota/asciicheck) ![Go](https://github.com/tdakkota/asciicheck/workflows/Go/badge.svg)
 Simple linter to check that your code does not contain non-ASCII identifiers
 
 # Install
