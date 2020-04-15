@@ -16,9 +16,10 @@ func NewAnalyzer() *analysis.Analyzer {
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	for _, file := range pass.Files {
+		alreadyViewed := map[*ast.Object]struct{}{}
 		ast.Inspect(
 			file, func(node ast.Node) bool {
-				cb(pass, node)
+				cb(pass, node, alreadyViewed)
 				return true
 			},
 		)
@@ -27,8 +28,14 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func cb(pass *analysis.Pass, n ast.Node) {
+func cb(pass *analysis.Pass, n ast.Node, m map[*ast.Object]struct{}) {
 	if v, ok := n.(*ast.Ident); ok {
+		if _, ok := m[v.Obj]; ok {
+			return
+		} else {
+			m[v.Obj] = struct{}{}
+		}
+
 		ch, ascii := isASCII(v.Name)
 		if !ascii {
 			pass.Report(
@@ -37,69 +44,6 @@ func cb(pass *analysis.Pass, n ast.Node) {
 					Message: fmt.Sprintf("identifier \"%s\" contain non-ASCII character: %#U", v.Name, ch),
 				},
 			)
-
 		}
 	}
-}
-
-func getIdentifiers(file *ast.File) (idents []*ast.Ident) {
-	for _, decl := range file.Decls {
-		switch value := decl.(type) {
-		case *ast.GenDecl:
-			idents = append(idents, handleGenDecl(value)...)
-		case *ast.FuncDecl:
-			idents = append(idents, handleFuncDecl(value)...)
-		}
-	}
-
-	return idents
-}
-
-func handleGenDecl(d *ast.GenDecl) []*ast.Ident {
-	fmt.Println("gendecl:", d)
-
-	var r []*ast.Ident
-	for _, spec := range d.Specs {
-		switch value := spec.(type) {
-		case *ast.ValueSpec:
-			fmt.Println("\tspec_value:", value, len(value.Values))
-			for _, name := range value.Names {
-				r = append(r, name)
-				fmt.Println("\t\tname:", name)
-			}
-
-			for _, expr := range value.Values {
-				fmt.Println(expr)
-			}
-		case *ast.TypeSpec:
-			r = append(r, value.Name)
-			fmt.Println("\tspec_type:", value.Name)
-		}
-	}
-
-	return r
-}
-
-func handleFuncDecl(d *ast.FuncDecl) []*ast.Ident {
-	fmt.Println("funcdecl:", d)
-
-	r := []*ast.Ident{d.Name}
-	for _, stmt := range d.Body.List {
-		switch v := stmt.(type) {
-		case *ast.AssignStmt:
-			for _, value := range v.Lhs {
-				if v, ok := value.(*ast.Ident); ok {
-					r = append(r, v)
-				}
-			}
-
-			for _, value := range v.Rhs {
-				if v, ok := value.(*ast.Ident); ok {
-					r = append(r, v)
-				}
-			}
-		}
-	}
-
-	return r
 }
