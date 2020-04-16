@@ -4,7 +4,7 @@ Simple linter to check that your code does not contain non-ASCII identifiers
 # Install
   
 ```
-go get -u github.com/tdakkota/asciicheck
+go get -u github.com/tdakkota/asciicheck/cmd/asciicheck
 ```
 
 # Usage
