@@ -1,13 +1,14 @@
 package asciicheck
 
 import (
+	"fmt"
 	"testing"
 	"unicode"
 )
 
 func TestIsASCII(t *testing.T) {
 	t.Run("ascii", func(t *testing.T) {
-		s := generateString()
+		s := generateString(unicode.MaxASCII + 1)
 		ch, ok := isASCII(s)
 
 		if !ok {
@@ -33,8 +34,30 @@ func TestIsASCII(t *testing.T) {
 	})
 }
 
-func generateString() string {
-	s := make([]byte, unicode.MaxASCII+1)
+func BenchmarkIsASCII(b *testing.B) {
+	// We are usually check small strings, that represents identifiers.
+	sizes := []int{
+		1, 8, 16, 32,
+	}
+	for _, size := range sizes {
+		b.Run(fmt.Sprintf("Len=%d", size), func(b *testing.B) {
+			s := generateString(size)
+			b.ReportAllocs()
+			b.ResetTimer()
+
+			for i := 0; i < b.N; i++ {
+				if _, ok := isASCII(s); !ok {
+					b.Fatal("unexpected result")
+				}
+			}
+		})
+
+	}
+
+}
+
+func generateString(l int) string {
+	s := make([]byte, l)
 	for i := range s {
 		s[i] = byte(i)
 	}
