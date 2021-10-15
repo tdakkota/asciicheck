@@ -1,7 +1,6 @@
 package asciicheck
 
 import (
-	"fmt"
 	"testing"
 	"unicode"
 )
@@ -28,7 +27,6 @@ func TestIsASCII(t *testing.T) {
 			t.Error("expected that string contains non-ASCII symbols")
 		}
 
-		fmt.Println()
 		if ch != 'п' {
 			t.Error("expected that ch is equal to first letter")
 		}
