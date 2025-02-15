@@ -1,5 +1,7 @@
 package testdata
 
-func TеstFunc() { // want `identifier "TеstFunc" contain non-ASCII character: U\+0435 'е'`
+func TéstFunc() {} // want `identifier "TéstFunc" contain non-ASCII character: U\+00E9 'é'`
 
+type _ interface {
+	TéstFunc() // want `identifier "TéstFunc" contain non-ASCII character: U\+00E9 'é'`
 }

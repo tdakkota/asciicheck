@@ -1,7 +1,6 @@
 package testdata
 
-type Field struct{}
-
-type JustStruct struct {
-	Tеst Field // want `identifier "Tеst" contain non-ASCII character: U\+0435 'е'`
+type _ struct {
+	Tést     int // want `identifier "Tést" contain non-ASCII character: U\+00E9 'é'`
+	_, Tést2 int // want `identifier "Tést2" contain non-ASCII character: U\+00E9 'é'`
 }
